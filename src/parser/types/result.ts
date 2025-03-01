@@ -190,20 +190,3 @@ export interface ParserOptions {
   maxFileSize: number;
 }
 
-/**
- * Tokenizer interface for breaking down input into tokens
- */
-export interface Tokenizer {
-  /**
-   * Tokenizes input content
-   * 
-   * @param content - Content to tokenize
-   * @returns Array of tokens
-   */
-  tokenize(content: string | Buffer): Token[];
-  
-  /**
-   * Resets the tokenizer state
-   */
-  reset(): void;
-}
