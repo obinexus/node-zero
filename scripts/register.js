@@ -13,3 +13,7 @@ moduleAlias.addAliases({
   '@errors': path.join(__dirname, 'src/errors'),
   '@types': path.join(__dirname, 'src/types')
 });
+
+// Register the module alias for the main entry point
+moduleAlias.addAlias('elavate', path.join(__dirname, 'src/elavate.js'));
+moduleAlias.addAlias('register', path.join(__dirname, 'src/register.js'));
