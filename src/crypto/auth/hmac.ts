@@ -13,7 +13,7 @@
 import crypto from 'crypto';
 import { ZeroError } from '../../errors/ZeroError.js';
 import { ZeroErrorCode } from '../../types/error.js';
-import { secureAlloc, constantTimeCompare } from '../../utils/memory.js';
+import { secureAlloc, secureFree, constantTimeCompare } from '../../utils/memory.js';
 import { CryptoFlags } from '../../types/common.js';
 import { HashAlgorithm } from '../hash.js';
 

@@ -12,4 +12,11 @@ export {
     createHmacProof,
     verifyHmacProof,
     HmacKeyOptions
-  } from './hmac.js';
+    } from './hmac.js';
+
+// Export Base64 steganography functions and types
+export {
+  encodeIntoBase64Image,
+  decodeFromBase64Image,
+  SteganographyOptions
+} from './base64.js';
