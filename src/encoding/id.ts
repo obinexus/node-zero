@@ -85,7 +85,9 @@ export function createId(
     const id: IZeroId = {
       version: context.config.version,  
       hash: dataHash,
-      salt
+      salt,
+      hashSize: dataHash.length,
+      saltSize: salt.length
     };
     
     // Track active ID

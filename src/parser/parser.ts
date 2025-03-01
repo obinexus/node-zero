@@ -656,6 +656,52 @@ export class ZeroParser {
    * @returns Serialized content
    */
   public serializeData(data: OutputData, format: FileFormat): Buffer | string {
+    // Validate data before attempting to serialize
+    if (!data || !data.id) {
+      throw new ZeroError(
+        ZeroErrorCode.INVALID_ARGUMENT,
+        'Cannot serialize null or undefined data',
+        { data }
+      );
+    }
+
+    // Validate required ID fields
+    if (!data.id.hash || data.id.hash.length === 0) {
+      throw new ZeroError(
+        ZeroErrorCode.INVALID_ARGUMENT, 
+        'ID hash is required',
+        { data }
+      );
+    }
+
+    if (!data.id.salt || data.id.salt.length === 0) {
+      throw new ZeroError(
+        ZeroErrorCode.INVALID_ARGUMENT,
+        'ID salt is required',
+        { data }
+      );
+    }
+
+    // Set default version if missing
+    if (typeof data.id.version !== 'number') {
+      data.id.version = 1;
+    }
+
+    // Validate key if present
+    if (data.key) {
+      if (!data.key.hash || data.key.hash.length === 0) {
+        throw new ZeroError(
+          ZeroErrorCode.INVALID_ARGUMENT,
+          'Key hash is required when key is present',
+          { data }
+        );
+      }
+
+      if (!data.key.timestamp) {
+        data.key.timestamp = Date.now();
+      }
+    }
+
     switch (format) {
       case FileFormat.TEXT:
         return this.serializeToText(data);
