@@ -17,8 +17,7 @@ export class ConfigValidator {
   constructor() {
     this._ajv = new Ajv({
       allErrors: true,
-      verbose: true,
-      strict: true
+      verbose: true
     });
   }
 
