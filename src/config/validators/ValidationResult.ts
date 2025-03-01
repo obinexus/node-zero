@@ -52,7 +52,7 @@ export class ValidationResult implements IValidationResult {
    * @param code - Optional error code
    */
   addError(path: string, message: string, code?: string): void {
-    this._errors.push(new ValidationError(path, message, code));
+    this._errors.push(new ValidationError(path, message, code || ''));
   }
 
   /**
