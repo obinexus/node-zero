@@ -1,5 +1,3 @@
-
-
 /**
  * HMAC-based authentication system for Zero-Knowledge Proofs
  * 
@@ -12,11 +10,12 @@
  * - K_derived: Derived key for authentication
  */
 
-import { ZeroError, ZeroErrorCode } from "@/errors";
-import { CryptoFlags } from "@/types";
-import { secureAlloc, constantTimeCompare } from "@/utils";
-import { HashAlgorithm } from "../hash";
 import crypto from 'crypto';
+import { ZeroError } from '../../errors/ZeroError.js';
+import { ZeroErrorCode } from '../../types/error.js';
+import { secureAlloc, constantTimeCompare } from '../../utils/memory.js';
+import { CryptoFlags } from '../../types/common.js';
+import { HashAlgorithm } from '../hash.js';
 
 /**
  * Options for HMAC key derivation
