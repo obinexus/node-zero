@@ -1,38 +1,43 @@
 // src/cli/commands/index.ts
 
 import { Command } from 'commander';
-import { registerChallengeCommand } from './challenge.js';
+
+// Import individual command registration functions
 import { registerCreateCommand } from './create.js';
 import { registerDeriveCommand } from './derive.js';
-import { registerInfoCommand } from './info.js';
-import { registerVerifyProofCommand } from './verify-proof.js';
 import { registerVerifyCommand } from './verify.js';
+import { registerChallengeCommand } from './challenge.js';
 import { registerProveCommand } from './prove.js';
-import { registerStegoCommand } from './stego';
+import { registerVerifyProofCommand } from './verify-proof.js';
+import { registerInfoCommand } from './info.js';
+import { registerStegoCommand } from './stego.js';
+import { registerConfigCommand } from './config.js';
 
 /**
- * Register all CLI commands with the Commander program
+ * Registers all CLI commands
+ * 
  * @param program - Commander program instance
- * @returns The Commander program with all commands registered
  */
-export function registerCommands(program: Command): Command {
+export function registerCommands(program: Command): void {
+  // Register individual commands
   registerCreateCommand(program);
-  registerVerifyCommand(program);
   registerDeriveCommand(program);
+  registerVerifyCommand(program);
   registerChallengeCommand(program);
   registerProveCommand(program);
   registerVerifyProofCommand(program);
   registerInfoCommand(program);
   registerStegoCommand(program);
-  return program;
+  registerConfigCommand(program);
 }
 
-// Re-export individual command registrars
-export { registerCreateCommand } from './create.js';
-export { registerVerifyCommand } from './verify.js';
-export { registerDeriveCommand } from './derive.js';
-export { registerChallengeCommand } from './challenge.js';
-export { registerProveCommand } from './prove.js';
-export { registerVerifyProofCommand } from './verify-proof.js';
-export { registerInfoCommand } from './info.js';
-export { registerStegoCommand } from './stego';
+// Export individual command handlers
+export * from './create.js';
+export * from './derive.js';
+export * from './verify.js';
+export * from './challenge.js';
+export * from './prove.js';
+export * from './verify-proof.js';
+export * from './info.js';
+export * from './stego.js';
+export * from './config.js';
