@@ -111,7 +111,8 @@ if (format === 'cli') {
       dir: 'dist/cli',
       format: 'es',
       sourcemap: true,
-      entryFileNames: '[name].js'
+      entryFileNames: '[name].js',
+      banner: '#!/usr/bin/env node'
     },
     external,
     plugins: createPlugins('cli', false)
