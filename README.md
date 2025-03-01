@@ -153,9 +153,6 @@ This command displays:
 Contributions are welcome! Please visit our GitHub repository for more information:
 [OBINexus Zero Library GitHub](https://github.com/obinexus/node-zero)
 
-## License
-
-MIT License - See LICENSE file in the repository for complete details.
 
 ## Support
 

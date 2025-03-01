@@ -81,25 +81,25 @@ export class ZeroParser {
    * @returns Detected file format
    */
   private identifyFormatFromString(input: string): FileFormat {
-    // Trim and limit input for processing
-    const trimmedInput = input.trim().slice(0, 500).toLowerCase();
+      // Trim and limit input for processing
+  const trimmedInput = input.trim().slice(0, 500);
 
-    // Prioritized format detection checks
-    
-    // 1. JSON Format Detection
-    // More robust JSON detection with multiple checks
-    if (
-      (trimmedInput.startsWith('{') && trimmedInput.includes('"') && trimmedInput.includes(':') && trimmedInput.endsWith('}')) ||
-      (trimmedInput.startsWith('[') && trimmedInput.includes('{') && trimmedInput.includes(':') && trimmedInput.endsWith(']'))
-    ) {
-      try {
-        // Attempt to parse as JSON to validate
-        JSON.parse(trimmedInput);
-        return FileFormat.JSON;
-      } catch {
-        // If parsing fails, it's not valid JSON
-      }
+  // Check for Zero Identity File text format first (most specific)
+  if (trimmedInput.includes('# Zero Identity File') || 
+      trimmedInput.includes('# Zero Key File')) {
+    return FileFormat.TEXT;
+  }
+  
+  // Then check other formats
+  if ((trimmedInput.startsWith('{') && trimmedInput.includes(':')) || 
+      (trimmedInput.startsWith('[') && trimmedInput.includes('{'))) {
+    try {
+      JSON.parse(trimmedInput.toLowerCase());
+      return FileFormat.JSON;
+    } catch {
+      // If parsing fails, continue to other format checks
     }
+  }
     
     // 2. Base64 Format Detection
     // More strict Base64 validation
@@ -129,12 +129,12 @@ export class ZeroParser {
     
     // 4. Default to TEXT format
     // Ensure it's a readable text format
-    if (/^[a-zA-Z0-9:.,\s\n\r]+$/.test(trimmedInput)) {
-      return FileFormat.TEXT;
-    }
-    
-    // Fallback to binary if no clear text format is detected
-    return FileFormat.BINARY;
+   // Default to TEXT for any readable content
+   if (/^[\x20-\x7E\n\r\t]+$/.test(trimmedInput)) {
+    return FileFormat.TEXT;
+  }
+  
+  return FileFormat.BINARY;
   }
 
   /**
@@ -185,11 +185,8 @@ export class ZeroParser {
    * @returns Parsed ID and optionally embedded key
    */
   private parseTextFormat(content: string): OutputData {
-    // Split into lines and remove comments and empty lines
-    const lines = content.split(/\r?\n/).filter(line => {
-      line = line.trim();
-      return line.length > 0 && !line.startsWith('#') && !line.startsWith('//');
-    });
+    // Split into lines and process section by section
+    const lines = content.split(/\r?\n/);
     
     // Initialize ID and key objects
     const result: OutputData = {
@@ -200,13 +197,18 @@ export class ZeroParser {
       }
     };
     
-    // Track if we're parsing ID or key
+    // Track if we're parsing ID or key section
     let parsingKey = false;
     
     // Process each line
     for (const line of lines) {
-      // Check for key section marker
-      if (line.toLowerCase().includes('key file') || line.toLowerCase().includes('key:')) {
+      const trimmedLine = line.trim();
+      
+      // Skip empty lines
+      if (trimmedLine.length === 0) continue;
+      
+      // Check for section markers
+      if (trimmedLine.startsWith('# Zero Key File')) {
         parsingKey = true;
         
         if (!result.key) {
@@ -219,18 +221,20 @@ export class ZeroParser {
         continue;
       }
       
-      // Split line into key-value
-      const [key, ...valueParts] = line.split(':');
-      if (!key || valueParts.length === 0) continue;
+      // Continue if comment line not marking a section
+      if (trimmedLine.startsWith('#')) continue;
       
-      const value = valueParts.join(':').trim();
-      
-      if (parsingKey) {
-        // Parse key properties
-        this.parseKeyProperty(key.trim().toLowerCase(), value, result);
-      } else {
-        // Parse ID properties
-        this.parseIdProperty(key.trim().toLowerCase(), value, result);
+      // Process key-value pairs
+      const colonIndex = trimmedLine.indexOf(':');
+      if (colonIndex > 0) {
+        const key = trimmedLine.substring(0, colonIndex).trim();
+        const value = trimmedLine.substring(colonIndex + 1).trim();
+        
+        if (parsingKey) {
+          this.parseKeyProperty(key, value, result);
+        } else {
+          this.parseIdProperty(key, value, result);
+        }
       }
     }
     
