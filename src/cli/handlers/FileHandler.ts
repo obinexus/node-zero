@@ -226,29 +226,28 @@ export class FileHandler {
       // Create directory if it doesn't exist
       const dir = path.dirname(outputPath);
       await fs.mkdir(dir, { recursive: true });
-      
-      // Prepare ID and key content separately
-      const idData: OutputData = { 
-        id: data.id
-      } as OutputData;
-      
-      const keyData = {
-        key: data.key
-      } as OutputData;
-      
-      // Serialize data using the parser
+
+      if (!data || !data.id) {
+        throw new ZeroError(
+          ZeroErrorCode.INVALID_ARGUMENT,
+          'Output data must contain a valid ID',
+          { data }
+        );
+      }
+
+      // Prepare ID content
+      const idData: OutputData = { id: data.id };
       const idContent = this.parser.serializeData(idData, format);
-      const keyContent = this.parser.serializeData(keyData, format);
-      
-      // Determine if content is binary
       const isBinary = format === FileFormat.BINARY || Buffer.isBuffer(idContent);
       
       // Write ID file
       await fs.writeFile(outputPath, idContent, isBinary ? undefined : 'utf8');
-      
+
       // Write key file separately if key exists
       if (data.key) {
         const keyPath = `${outputPath}.key`;
+        const keyData: OutputData = { id: data.id, key: data.key };
+        const keyContent = this.parser.serializeData(keyData, format);
         await fs.writeFile(keyPath, keyContent, isBinary ? undefined : 'utf8');
       }
     } catch (err) {
