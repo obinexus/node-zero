@@ -1,13 +1,23 @@
-import { ValidationError } from './ValidationError';
+import { IValidationError, ValidationError } from './ValidationError';
+/**
+ * Interface for validation result operations
+ */
+export interface IValidationResult {
+  isValid: boolean;
+  getErrors(): IValidationError[];
+  hasErrors(): boolean;
+  addError(path: string, message: string, code?: string): void;
+  merge(otherResult: ValidationResult): void;
+}
 
 /**
  * Represents the result of a configuration validation
  */
-export class ValidationResult {
+export class ValidationResult implements IValidationResult {
   /**
    * List of validation errors
    */
-  private _errors: ValidationError[] = [];
+  private _errors: IValidationError[] = [];
 
   /**
    * Indicates whether the validation was successful
@@ -21,7 +31,7 @@ export class ValidationResult {
    * 
    * @returns Array of validation errors
    */
-  getErrors(): ValidationError[] {
+  getErrors(): IValidationError[] {
     return [...this._errors];
   }
 

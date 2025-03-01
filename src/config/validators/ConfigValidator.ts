@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import { Ajv, ErrorObject } from 'ajv';
 import { ConfigSchema } from '../schema/ConfigSchema';
 import { ValidationResult } from './ValidationResult';
 
@@ -41,10 +41,12 @@ export class ConfigValidator {
 
     // If validation fails, add errors to the result
     if (!isValid && validate.errors) {
-      validate.errors.forEach(error => {
-        const path = error.instancePath || '';
-        const message = error.message || 'Unknown validation error';
-        const code = error.keyword;
+    
+
+      (validate.errors as ValidationError[]).forEach((error: ValidationError) => {
+        const path: string = error.instancePath || '';
+        const message: string = error.message || 'Unknown validation error';
+        const code: string = error.keyword;
 
         validationResult.addError(path, message, code);
       });
@@ -74,7 +76,7 @@ export class ConfigValidator {
 
     // If validation fails, add errors to the result
     if (!isValid && validate.errors) {
-      validate.errors.forEach(error => {
+      validate.errors.forEach((error: ErrorObject) => {
         const path = error.instancePath || '';
         const message = error.message || 'Unknown validation error';
         const code = error.keyword;

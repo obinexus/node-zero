@@ -1,19 +1,36 @@
 /**
+ * Interface defining the structure of a validation error
+ */
+export interface IValidationError {
+  instancePath?: string;
+  message?: string;
+  keyword: string;
+}
+
+/**
  * Represents a specific validation error
  */
-export class ValidationError {
+export class ValidationError implements IValidationError {
+    public instancePath: string;
+    public message: string;
+    public keyword: string;
+
     /**
      * Creates a new ValidationError instance
      * 
-     * @param path - The path to the invalid configuration property
+     * @param instancePath - The path to the invalid configuration property
      * @param message - Descriptive error message
-     * @param code - Optional error code for more specific error identification
+     * @param keyword - Error keyword for identification
      */
     constructor(
-      public path: string,
-      public message: string,
-      public code?: string
-    ) {}
+      instancePath: string,
+      message: string,
+      keyword: string
+    ) {
+      this.instancePath = instancePath;
+      this.message = message;
+      this.keyword = keyword;
+    }
   
     /**
      * Converts the validation error to a string representation
@@ -21,7 +38,6 @@ export class ValidationError {
      * @returns A formatted error string
      */
     toString(): string {
-      const codeStr = this.code ? `[${this.code}] ` : '';
-      return `${codeStr}${this.path}: ${this.message}`;
+      return `[${this.keyword}] ${this.instancePath}: ${this.message}`;
     }
-  }
+}
