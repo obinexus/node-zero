@@ -60,6 +60,8 @@ export {
     isHashContext
   };
   
+  export * from './auth/index';
+  
   /**
    * Generates a cryptographically secure random buffer
    * 
@@ -154,3 +156,4 @@ export {
       throw new Error(`Password verification failed: ${String(err)}`);
     }
   }
+
