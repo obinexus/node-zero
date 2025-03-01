@@ -1,3 +1,4 @@
+import { HashAlgorithm } from '@/crypto';
 import crypto from 'crypto';
 
 /**
@@ -68,7 +69,7 @@ export const CRYPTO = {
      * Must be a supported algorithm by the platform
      * @see https://nodejs.org/api/crypto.html#crypto_crypto_gethashes
      */
-    DEFAULT_ALGORITHM: 'SHA-256',
+    DEFAULT_ALGORITHM: 'sha256' as HashAlgorithm,
     
     /**
      * Maximum acceptable salt length in bytes

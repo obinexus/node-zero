@@ -1,12 +1,14 @@
 /**
  * Context-related type definitions for Zero library
  */
+import { HashAlgorithm } from '@/crypto/index.js';
 import { hasRequiredProperties } from './common.js';
 
 /**
  * Configuration options for Zero context
  */
 export interface IZeroConfig {
+  algorithm: HashAlgorithm | undefined;
   /**
    * Length of salt used in cryptographic operations (in bytes)
    * Must be between 16 and 64 bytes
