@@ -7,6 +7,7 @@ import { registerDeriveCommand } from './derive.js';
 import { registerInfoCommand } from './info.js';
 import { registerVerifyProofCommand } from './verify-proof.js';
 import { registerVerifyCommand } from './verify.js';
+import { registerProveCommand } from './prove.js';
 
 /**
  * Register all CLI commands with the Commander program

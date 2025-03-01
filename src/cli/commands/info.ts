@@ -1,7 +1,7 @@
 import { ZeroContext } from "@/context/ZeroContext.js";
 import { InfoCommandOptions } from "@/parser/index.js";
 import { VERSION } from "@/utils/constants.js";
-import chalk from "chalk/index.js";
+import chalk from "chalk/";
 import { Command } from "commander";
 import { table } from "console";
 

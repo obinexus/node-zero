@@ -3,7 +3,7 @@
 import { ZeroContext } from "@/context/ZeroContext.js";
 import { verifyId } from "@/encoding/id.js";
 import { IZeroId, IZeroKey } from "@/encoding/index.js";
-import chalk from "chalk/index.js";
+import chalk from "chalk/";
 import { Command } from "commander";
 import ora from "ora";
 import { FileHandler } from "../handlers/FileHandler.js";
