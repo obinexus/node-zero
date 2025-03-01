@@ -1,136 +1,162 @@
-# Zero: Zero-Knowledge Proof Library
+# Zero CLI: Zero-Knowledge Proof Command Line Interface
 
-A TypeScript implementation of Zero-Knowledge Proofs for Node.js, providing secure identity and authentication mechanisms.
+## Overview
 
-## Features
+The Zero CLI provides a powerful, secure command-line interface for managing zero-knowledge proof identities, challenges, and verifications. Designed for developers and security professionals, it offers robust cryptographic operations with a simple, intuitive interface.
 
-- **Secure Identity Management**: Create, verify, and derive secure identities
-- **Zero-Knowledge Proofs**: Generate and verify proofs without revealing underlying data
-- **Command Line Interface**: Powerful CLI for all operations
-- **Type Safety**: Full TypeScript support with comprehensive type definitions
-- **Secure Memory Handling**: Protection against memory-based attacks
-- **Cryptographic Primitives**: Strong cryptographic foundations
+## Prerequisites
+
+- Node.js (version 16.0.0 or higher)
+- npm (Node Package Manager)
 
 ## Installation
+
+Install the Zero CLI globally to use it from any directory:
+
+```bash
+npm install -g @obinexuscomputing/zero
+```
+
+Alternatively, you can install it in a specific project:
 
 ```bash
 npm install @obinexuscomputing/zero
 ```
 
-## Quick Start
+## Identity Management Workflow
 
-### JavaScript/TypeScript Usage
+### 1. Creating an Identity
 
-```typescript
-import { ZeroContext, createId, verifyId } from '@obinexuscomputing/zero';
-
-// Initialize context
-const context = ZeroContext.create();
-
-// Create an identity
-const id = createId(context, {
-  keys: ['name', 'email'],
-  values: ['John Doe', 'john@example.com']
-});
-
-// Verify the identity
-const isValid = verifyId(context, id, key, {
-  keys: ['name', 'email'],
-  values: ['John Doe', 'john@example.com']
-});
-
-console.log(isValid); // true
-```
-
-### CLI Usage
+Create a secure identity from a JSON input file:
 
 ```bash
-# Create an identity from input data
-zero create -i identity.json -o id.zid
-
-# Verify an identity against input data
-zero verify -i identity.json -k id.zid
-
-# Derive a purpose-specific identity
-zero derive -i base.zid -p "authentication" -o auth.zid
-
-# Generate a challenge for proof
-zero challenge -o challenge.bin
-
-# Create a zero-knowledge proof
-zero prove -i id.zid -c challenge.bin -o proof.bin
-
-# Verify a proof
-zero verify-proof -i proof.bin -c challenge.bin -d id.zid
+zero create -i identity.json -o my_identity.zid
 ```
 
-## API Documentation
+Example `identity.json`:
+```json
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "role": "Developer"
+}
+```
 
-### Core Classes
+#### Command Options:
+- `-i, --input <file>`: Input JSON file with identity data (required)
+- `-o, --output <file>`: Output identity file (required)
+- `-s, --salt <size>`: Salt length in bytes (default: 32)
+- `-a, --algorithm <algo>`: Hash algorithm (sha256, sha384, sha512, default: sha512)
+- `-f, --format <format>`: Output format (text, json, binary, default: text)
+- `-v, --verbose`: Display detailed identity information
 
-- `ZeroContext`: Central context for all operations
-- `ZeroMap`: Encoding map for character mapping operations
-- `ZeroError`: Error handling with detailed information
+### 2. Verifying an Identity
 
-### Identity Operations
-
-- `createId()`: Generate a secure identity from input data
-- `verifyId()`: Verify an identity against input data
-- `deriveId()`: Create a derived identity for specific purposes
-- `idToString()`: Convert an identity to string representation
-- `idFromString()`: Parse a string back to an identity object
-
-### Zero-Knowledge Proof Operations
-
-- `generateChallenge()`: Create a secure challenge
-- `createProof()`: Generate a proof for an identity
-- `verifyProof()`: Verify a proof against a challenge and identity
-
-### Key Management
-
-- `createKey()`: Generate a verification key for an identity
-- `verifyKey()`: Verify a key against an identity
-- `renewKey()`: Extend the expiration of a key
-- `revokeKey()`: Create a key revocation record
-
-## Security
-
-This library implements several security measures:
-
-- **Constant-time operations** to prevent timing attacks
-- **Secure memory wiping** to prevent data leakage
-- **Buffer overflow detection** using canary values
-- **Strong cryptographic primitives** with appropriate parameters
-
-## Development
+Verify an existing identity against input data:
 
 ```bash
-# Clone the repository
-git clone https://github.com/obinexus/node-zero.git
-cd node-zero
-
-# Install dependencies
-npm install
-
-# Build the library
-npm run build
-
-# Run tests
-npm test
-
-# Run linting
-npm run lint
-
-# Generate documentation
-npm run docs
+zero verify -i identity.json -k my_identity.zid
 ```
+
+#### Command Options:
+- `-i, --input <file>`: Input JSON file to verify (required)
+- `-k, --key <file>`: Key file for verification (required)
+- `-d, --id <file>`: Optional separate ID file (if not embedded in key)
+- `-v, --verbose`: Show detailed verification information
+
+### 3. Deriving Specialized Identities
+
+Create purpose-specific identities from a base identity:
+
+```bash
+zero derive -i my_identity.zid -p "authentication" -o auth_identity.zid
+```
+
+#### Command Options:
+- `-i, --input <file>`: Base identity file (required)
+- `-p, --purpose <str>`: Purpose for derived identity (required)
+- `-o, --output <file>`: Output derived identity file
+- `-a, --algorithm <algo>`: KDF algorithm (default: pbkdf2-sha512)
+- `-f, --format <format>`: Output format (text, json, binary)
+
+### 4. Generating Challenges
+
+Create a challenge for zero-knowledge proof verification:
+
+```bash
+zero challenge -o challenge.bin -s 64
+```
+
+#### Command Options:
+- `-o, --output <file>`: Output challenge file (required)
+- `-s, --size <size>`: Challenge size in bytes (default: 32)
+
+### 5. Creating Proofs
+
+Generate a zero-knowledge proof for an identity:
+
+```bash
+zero prove -i my_identity.zid -c challenge.bin -o proof.bin
+```
+
+#### Command Options:
+- `-i, --input <file>`: Identity file (required)
+- `-c, --challenge <file>`: Challenge file (required)
+- `-o, --output <file>`: Proof output file (required)
+- `-f, --format <format>`: Output format (binary, base64)
+- `-v, --verbose`: Display proof details
+
+### 6. Verifying Proofs
+
+Verify a zero-knowledge proof:
+
+```bash
+zero verify-proof -i proof.bin -c challenge.bin -d my_identity.zid
+```
+
+#### Command Options:
+- `-i, --input <file>`: Proof file (required)
+- `-c, --challenge <file>`: Challenge file (required)
+- `-d, --id <file>`: Identity file for verification (required)
+
+## System Information
+
+View detailed information about the Zero library and CLI:
+
+```bash
+zero info
+```
+
+This command displays:
+- CLI and library versions
+- Protocol version
+- Supported algorithms
+- Current memory usage
+- Active identities
+
+## Security Considerations
+
+- Identities are cryptographically secure and cannot be reverse-engineered
+- All operations use constant-time comparisons to prevent timing attacks
+- Supports multiple hash algorithms with configurable parameters
+- Implements secure memory handling to prevent data leakage
+
+## Troubleshooting
+
+1. Ensure you have the latest version of Node.js
+2. Verify that the input files are correctly formatted
+3. Check file permissions
+4. Use the `-v, --verbose` flag for detailed error information
+
+## Contributing
+
+Contributions are welcome! Please visit our GitHub repository for more information:
+[OBINexus Zero Library GitHub](https://github.com/obinexus/node-zero)
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License - See LICENSE file in the repository for complete details.
 
-## Acknowledgments
+## Support
 
-- Based on academic research in zero-knowledge proof systems
-- Implements the Schnorr identification protocol
-- Designed with security and privacy as primary concerns
+For additional support, please file an issue on our GitHub repository or contact support@obinexuscomputing.com.
