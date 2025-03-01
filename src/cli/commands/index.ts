@@ -24,7 +24,6 @@ export function registerCommands(program: Command): Command {
   registerVerifyProofCommand(program);
   registerInfoCommand(program);
   registerStegoCommand(program);
-  
   return program;
 }
 

@@ -161,7 +161,7 @@ export async function handleStegoDecodeCommand(options: StegoDecodeCommandOption
     
     // Verbose output
     if (options.verbose) {
-      displayDecodingDetails(options, encodedImage, decodedData);
+      displayDecodingDetails(options, decodedData);
     }
   } catch (error) {
     spinner.fail('Failed to decode data from image');
@@ -236,8 +236,7 @@ function displayEncodingDetails(
  * Displays detailed decoding information
  */
 function displayDecodingDetails(
-  options: StegoDecodeCommandOptions, 
-  encodedImage: string, 
+  options: StegoDecodeCommandOptions,
   decodedData: Buffer
 ): void {
   console.log(chalk.bold('\nSteganography Decoding Details:'));

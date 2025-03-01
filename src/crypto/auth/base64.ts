@@ -84,14 +84,29 @@ export function encodeIntoBase64Image(
       // Create a salt for key derivation
       const salt = opts.salt || crypto.randomBytes(16);
       
-      // Derive encryption key from password
+      // Derive encryption key from password - ensure 32 bytes for AES-256-GCM
       keyBuffer = deriveHmacKey(passwordBuffer, salt, {
         algorithm: opts.algorithm,
         iterations: 10000, // Higher iteration count for password-based derivation
-        salt
+        salt,
+        flags: opts.flags
       });
+      
+      // Ensure key is exactly 32 bytes (256 bits) for AES-256-GCM
+      if (keyBuffer.length !== 32) {
+        // If key is too long, truncate
+        if (keyBuffer.length > 32) {
+          keyBuffer = keyBuffer.slice(0, 32);
+        } 
+        // If key is too short, pad with zeros (should never happen with SHA-512)
+        else if (keyBuffer.length < 32) {
+          const paddedKey = Buffer.alloc(32, 0);
+          keyBuffer.copy(paddedKey);
+          keyBuffer = paddedKey;
+        }
+      }
     } else {
-      // Use a random key if no password provided
+      // Use a random key if no password provided - exactly 32 bytes
       keyBuffer = crypto.randomBytes(32);
     }
 
@@ -216,8 +231,23 @@ export function decodeFromBase64Image(
       keyBuffer = deriveHmacKey(passwordBuffer, salt, {
         algorithm: opts.algorithm,
         iterations: 10000,
-        salt
+        salt,
+        flags: opts.flags
       });
+      
+      // Ensure key is exactly 32 bytes for AES-256-GCM
+      if (keyBuffer.length !== 32) {
+        // If key is too long, truncate
+        if (keyBuffer.length > 32) {
+          keyBuffer = keyBuffer.slice(0, 32);
+        } 
+        // If key is too short, pad with zeros (should never happen with SHA-512)
+        else if (keyBuffer.length < 32) {
+          const paddedKey = Buffer.alloc(32, 0);
+          keyBuffer.copy(paddedKey);
+          keyBuffer = paddedKey;
+        }
+      }
     } else {
       throw new ZeroError(
         ZeroErrorCode.INVALID_ARGUMENT,
