@@ -1,5 +1,5 @@
 import { ZeroError, ZeroErrorCode } from "@/errors";
-import { Token, TokenType} from "./result";
+import { Token, TokenType} from "./types/result";
 
 /**
  * Command options for 'challenge' command
