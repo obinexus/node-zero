@@ -42,8 +42,14 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import { registerCommands } from './commands/index.js';
 import { ZeroError } from '@/errors/ZeroError.js';
-// CLI constants
-const CLI_VERSION = '0.1.0'; // Hardcoded version
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+// Get package version from package.json
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const packageJson = JSON.parse(readFileSync(join(__dirname, '../../../package.json'), 'utf8'));
+const CLI_VERSION = packageJson.version;
 const PROGRAM_NAME = 'zero';
 
 /**
