@@ -13,7 +13,7 @@
 import crypto from 'crypto';
 import { ZeroError } from '../../errors/ZeroError.js';
 import { ZeroErrorCode } from '../../types/error.js';
-import { secureAlloc, secureFree, constantTimeCompare } from '../../utils/memory.js';
+import { secureAlloc, constantTimeCompare } from '../../utils/memory.js';
 import { CryptoFlags } from '../../types/common.js';
 import { HashAlgorithm } from '../hash.js';
 
@@ -117,7 +117,7 @@ export function deriveHmacKey(
       }
       
       hmac.update(publicData);
-      derivedKey = hmac.digest();
+      derivedKey = Buffer.from(hmac.digest());
     }
 
     // Create secure buffer for the derived key if requested
