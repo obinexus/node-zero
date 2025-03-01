@@ -11,8 +11,8 @@ import crypto from 'crypto';
 import { ZeroContext } from './ZeroContext.js';
 import { ZeroError, ZeroErrorCode } from '../errors/index.js';
 import { CryptoFlags } from '../types/common.js';
-import {HashAlgorithm, hmac } from '../crypto/index.js';
-import {  secureFree, constantTimeCompare, secureRandomBytes } from '../utils/memory.js';
+import { HashAlgorithm, hmac } from '../crypto/index.js';
+import { secureFree, constantTimeCompare, secureRandomBytes } from '../utils/memory.js';
 
 /**
  * Entry in the hash table
