@@ -13,6 +13,7 @@
     },
     "./cli": {
       "import": "./dist/cli/cli.js",
+      "require": "./dist/cli/cli.js",
       "types": "./dist/cli/types/cli.d.ts"
     }
   },
