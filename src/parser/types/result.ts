@@ -1,4 +1,6 @@
-// src/parser/types/result.ts
+/**
+ * File format types and token definitions for the parser subsystem
+ */
 
 /**
  * File format types for Zero data files
@@ -189,4 +191,3 @@ export interface ParserOptions {
    */
   maxFileSize: number;
 }
-
