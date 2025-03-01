@@ -22,7 +22,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@cli/*": ["./src/cli/*"],  
+      "@cli/*": ["./src/cli/*"],
+      "@config/*": ["./src/config/*"],
+      "@parser/*": ["./src/parser/*"],
       "@utils/*": ["./src/utils/*"],
       "@context/*": ["./src/context/*"],
       "@crypto/*": ["./src/crypto/*"],
