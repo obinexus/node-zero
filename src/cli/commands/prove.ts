@@ -2,7 +2,7 @@
 
 import { ZeroContext } from "@/context/ZeroContext.js";
 import { createProof } from "@/encoding/id.js";
-import chalk from "chalk/";
+import chalk from "chalk";
 import { Command } from "commander";
 import ora from "ora";
 import fs from "fs/promises";

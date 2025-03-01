@@ -3,7 +3,9 @@
  * Extends ZeroError with HTTP status codes and response formatting capabilities
  */
 
-import { ZeroErrorCode, ZeroError } from "./index.js";
+import { ZeroErrorCode } from "@/types";
+import { ZeroError} from "./ZeroError";
+
 
 
 /**

@@ -3,7 +3,7 @@ import { HashAlgorithm } from "@/crypto/hash.js";
 import { createId } from "@/encoding/id.js";
 import { createKey } from "@/encoding/index.js";
 import { CryptoFlags } from "@/types/common.js";
-import chalk from "chalk/";
+import chalk from "chalk";
 import { Command } from "commander";
 import ora from "ora";
 import { FileHandler } from "../handlers/FileHandler.js";

@@ -3,9 +3,7 @@
  * Provides standardized error handling with detailed information
  */
 
-import { IZeroErrorInfo } from "@/types/error.js";
-import { ZeroErrorCode } from "./index.js";
-
+import { IZeroErrorInfo, ZeroErrorCode } from "@/types/error.js";
 /**
  * Custom error class for all Zero library errors
  * Extends standard Error with additional context and metadata
