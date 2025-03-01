@@ -28,13 +28,13 @@ export class FileHandler {
       // Read file content
       const content = await fs.readFile(filePath);
       
-      // Auto-detect format and parse
+      // Parse file and validate ID existence
       const result = this.parser.parseZidFile(content);
       
-      if (!result) {
+      if (!result || !result.id) {
         throw new ZeroError(
           ZeroErrorCode.INVALID_FORMAT,
-          'Failed to parse ID file',
+          'Failed to parse ID file or file does not contain an ID',
           { filePath }
         );
       }
