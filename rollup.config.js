@@ -110,10 +110,11 @@ if (format === 'cli') {
     output: {
       dir: 'dist/cli',
       format: 'es',
-      sourcemap: true
+      sourcemap: true,
+      entryFileNames: '[name].js'
     },
     external,
-    plugins: createPlugins('cli')
+    plugins: createPlugins('cli', false)
   };
 }
 

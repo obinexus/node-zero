@@ -1,4 +1,35 @@
 /**
+ * CLI main export module
+ * 
+ * This file serves as the main entry point for the CLI functionality.
+ * It initializes and exports the core CLI components and types.
+ * 
+ * @module cli
+ * 
+ * @example
+ * // Import and use the CLI programmatically
+ * import { program } from '@zero/cli';
+ * program.parse(process.argv);
+ * 
+ * @example
+ * // Use individual CLI components
+ * import { createCLI, main } from '@zero/cli';
+ * const program = createCLI();
+ * await main();
+ * 
+ * @example
+ * // Access CLI commands and handlers
+ * import { commands, handlers } from '@zero/cli';
+ * commands.register(program);
+ * 
+ * @exports createCLI - Function to create and configure CLI instance
+ * @exports main - Main CLI entry point function
+ * @exports program - Initialized CLI program instance
+ * @exports commands - CLI command definitions
+ * @exports handlers - Command handler implementations
+ * @exports types - CLI type definitions
+ */
+/**
  * Zero CLI - Command-line interface for Zero library
  * 
  * This module provides a command-line interface to the Zero library,
@@ -108,4 +139,6 @@ if (import.meta.url === new URL(process.argv[1], 'file:').href) {
   });
 }
 
+const program = createCLI();
+export { program };
 export default { createCLI, main };
