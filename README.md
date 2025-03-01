@@ -30,7 +30,7 @@ npm install @obinexuscomputing/zero
 Create a secure identity from a JSON input file:
 
 ```bash
-zero create -i identity.json -o my_identity.zid
+zero create -i identity.json -o id.zid
 ```
 
 Example `identity.json`:
@@ -55,7 +55,7 @@ Example `identity.json`:
 Verify an existing identity against input data:
 
 ```bash
-zero verify -i identity.json -k my_identity.zid
+zero verify -i identity.json -k id.zid.key
 ```
 
 #### Command Options:
@@ -69,7 +69,7 @@ zero verify -i identity.json -k my_identity.zid
 Create purpose-specific identities from a base identity:
 
 ```bash
-zero derive -i my_identity.zid -p "authentication" -o auth_identity.zid
+zero derive -i id.zid -p "authentication" -o auth_identity.zid
 ```
 
 #### Command Options:
@@ -96,7 +96,7 @@ zero challenge -o challenge.bin -s 64
 Generate a zero-knowledge proof for an identity:
 
 ```bash
-zero prove -i my_identity.zid -c challenge.bin -o proof.bin
+zero prove -i id.zid -c challenge.bin -o proof.bin
 ```
 
 #### Command Options:
@@ -111,7 +111,7 @@ zero prove -i my_identity.zid -c challenge.bin -o proof.bin
 Verify a zero-knowledge proof:
 
 ```bash
-zero verify-proof -i proof.bin -c challenge.bin -d my_identity.zid
+zero verify-proof -i proof.bin -c challenge.bin -d id.zid
 ```
 
 #### Command Options:
