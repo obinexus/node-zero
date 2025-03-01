@@ -188,7 +188,21 @@ export class ZeroHashTable<K, V> {
     // Generate master key for this instance
     this.masterKey = secureRandomBytes(32);
   }
-  
+  /**
+   * Iterator for keys in the hash table
+   */
+  public *keys(): Generator<K, void, undefined> {
+    for (const bucket of this.buckets) {
+      for (const entry of bucket) {
+        // Skip expired entries
+        if (this.isEntryExpired(entry)) {
+          continue;
+        }
+        // Pass through keyHmac and salt to validate
+        yield entry.keyHmac as unknown as K;
+      }
+    }
+  }
   /**
    * Gets the number of entries in the hash table
    */
