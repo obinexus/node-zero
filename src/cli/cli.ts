@@ -48,7 +48,7 @@ import { dirname, join } from 'path';
 
 // Get package version from package.json
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const packageJson = JSON.parse(readFileSync(join(__dirname, '../../../package.json'), 'utf8'));
+const packageJson = JSON.parse(readFileSync(join(__dirname, '../../package.json'), 'utf8'));
 const CLI_VERSION = packageJson.version;
 const PROGRAM_NAME = 'zero';
 
