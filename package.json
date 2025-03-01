@@ -12,7 +12,7 @@
       "types": "./dist/esm/types/index.d.ts"
     },
     "./cli": {
-      "import": "./dist/cli/index.js",
+      "import": "./dist/cli/cli.js",
       "types": "./dist/cli/types/cli.d.ts"
     }
   },
