@@ -8,6 +8,8 @@ import { ZeroError, ZeroErrorCode } from '../errors';
 import { IZeroConfigModel } from './models/IZeroConfigModel';
 import { FileConfigAdapter } from './adapter/FileConfigAdapter';
 import { JsonConfigAdapter } from './adapter/JsonConfigAdapter';
+import { ConfigSchema } from './schema/ConfigSchema';
+import { ConfigValidator } from './validators/ConfigValidator';
 
 
 /**
@@ -196,8 +198,9 @@ export class ZeroConfig {
     for (const [key, value] of Object.entries(userConfig)) {
       if (key in defaultConfig && value !== null && typeof value === 'object') {
         // Deep merge objects
+        const defaultValue = defaultConfig[key as keyof IZeroConfigModel];
         result[key as keyof IZeroConfigModel] = {
-          ...defaultConfig[key as keyof IZeroConfigModel],
+          ...(typeof defaultValue === 'object' && defaultValue !== null ? defaultValue : {}),
           ...value
         };
       } else if (key in defaultConfig) {
