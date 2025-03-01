@@ -84,6 +84,11 @@ export function encodeIntoBase64Image(
       // Create a salt for key derivation
       const salt = opts.salt || crypto.randomBytes(16);
       
+      // Store the salt for later use in options
+      if (!opts.salt) {
+        opts.salt = salt;
+      }
+      
       // Derive encryption key from password - ensure 32 bytes for AES-256-GCM
       keyBuffer = deriveHmacKey(passwordBuffer, salt, {
         algorithm: opts.algorithm,
@@ -94,16 +99,17 @@ export function encodeIntoBase64Image(
       
       // Ensure key is exactly 32 bytes (256 bits) for AES-256-GCM
       if (keyBuffer.length !== 32) {
-        // If key is too long, truncate
-        if (keyBuffer.length > 32) {
-          keyBuffer = keyBuffer.slice(0, 32);
-        } 
-        // If key is too short, pad with zeros (should never happen with SHA-512)
-        else if (keyBuffer.length < 32) {
-          const paddedKey = Buffer.alloc(32, 0);
-          keyBuffer.copy(paddedKey);
-          keyBuffer = paddedKey;
-        }
+        // Create a new buffer of the correct size to avoid reusing
+        const adjustedKey = Buffer.alloc(32);
+        
+        // If key is too long, truncate; if too short, pad with zeros
+        const copyLength = Math.min(keyBuffer.length, 32);
+        keyBuffer.copy(adjustedKey, 0, 0, copyLength);
+        
+        // Securely free the original buffer
+        secureFree(keyBuffer);
+        
+        keyBuffer = adjustedKey;
       }
     } else {
       // Use a random key if no password provided - exactly 32 bytes
@@ -113,8 +119,15 @@ export function encodeIntoBase64Image(
     // Encrypt the secret data
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv('aes-256-gcm', keyBuffer, iv);
-    let encryptedData = cipher.update(secretBuffer);
-    encryptedData = Buffer.concat([encryptedData, cipher.final()]);
+    
+    // Use separate buffers for update and final to avoid buffer reuse issues
+    const encryptedDataPart1 = cipher.update(secretBuffer);
+    const encryptedDataPart2 = cipher.final();
+    
+    // Combine encrypted data parts
+    const encryptedData = Buffer.concat([encryptedDataPart1, encryptedDataPart2]);
+    
+    // Get authentication tag
     const authTag = cipher.getAuthTag();
 
     // Combine salt, IV, auth tag and encrypted data
@@ -126,12 +139,13 @@ export function encodeIntoBase64Image(
     ]);
 
     // Compute HMAC of the encrypted data for integrity verification
-    const hmac = crypto.createHmac(
+    // Create a new instance of HMAC to avoid reuse
+    const hmacInstance = crypto.createHmac(
       getAlgorithmName(opts.algorithm),
       keyBuffer
     );
-    hmac.update(dataToEmbed);
-    const signature = hmac.digest();
+    hmacInstance.update(dataToEmbed);
+    const signature = hmacInstance.digest();
 
     // Combine signature and data
     const fullDataToEmbed = Buffer.concat([
@@ -148,7 +162,7 @@ export function encodeIntoBase64Image(
     const base64Image = resultImage.toString('base64');
 
     // Clean up sensitive data
-    if (keyBuffer) secureFree(keyBuffer);
+    secureFree(keyBuffer);
     
     return base64Image;
   } catch (err) {
@@ -185,6 +199,8 @@ export function decodeFromBase64Image(
   // Apply default options
   const opts: SteganographyOptions = { ...DEFAULT_STEG_OPTIONS, ...options };
 
+  let keyBuffer: Buffer | null = null;
+  
   try {
     // Convert base64 to buffer
     const imageBuffer = Buffer.from(base64Image, 'base64');
@@ -204,49 +220,49 @@ export function decodeFromBase64Image(
     // Extract salt if present
     let salt: Buffer;
     if (hasSalt) {
-      salt = embeddedData.slice(position, position + 16);
+      salt = Buffer.from(embeddedData.slice(position, position + 16));
       position += 16;
     } else {
       salt = Buffer.alloc(0);
     }
 
     // Extract IV and auth tag
-    const iv = embeddedData.slice(position, position + 16);
+    const iv = Buffer.from(embeddedData.slice(position, position + 16));
     position += 16;
     
-    const authTag = embeddedData.slice(position, position + 16);
+    const authTag = Buffer.from(embeddedData.slice(position, position + 16));
     position += 16;
     
     // The rest is the encrypted data
-    const encryptedData = embeddedData.slice(position);
+    const encryptedData = Buffer.from(embeddedData.slice(position));
 
     // Derive key from password if provided
-    let keyBuffer: Buffer;
     if (password) {
       const passwordBuffer = typeof password === 'string' 
         ? Buffer.from(password, 'utf8') 
-        : password;
+        : Buffer.from(password);
       
       // Derive decryption key
       keyBuffer = deriveHmacKey(passwordBuffer, salt, {
         algorithm: opts.algorithm,
         iterations: 10000,
-        salt,
+        salt: Buffer.from(salt),
         flags: opts.flags
       });
       
       // Ensure key is exactly 32 bytes for AES-256-GCM
       if (keyBuffer.length !== 32) {
-        // If key is too long, truncate
-        if (keyBuffer.length > 32) {
-          keyBuffer = keyBuffer.slice(0, 32);
-        } 
-        // If key is too short, pad with zeros (should never happen with SHA-512)
-        else if (keyBuffer.length < 32) {
-          const paddedKey = Buffer.alloc(32, 0);
-          keyBuffer.copy(paddedKey);
-          keyBuffer = paddedKey;
-        }
+        // Create a new buffer of the correct size
+        const adjustedKey = Buffer.alloc(32);
+        
+        // If key is too long, truncate; if too short, pad with zeros
+        const copyLength = Math.min(keyBuffer.length, 32);
+        keyBuffer.copy(adjustedKey, 0, 0, copyLength);
+        
+        // Securely free the original buffer
+        secureFree(keyBuffer);
+        
+        keyBuffer = adjustedKey;
       }
     } else {
       throw new ZeroError(
@@ -257,12 +273,13 @@ export function decodeFromBase64Image(
     }
 
     // Verify integrity using HMAC
-    const hmac = crypto.createHmac(
+    // Create a new HMAC instance
+    const hmacInstance = crypto.createHmac(
       getAlgorithmName(opts.algorithm),
       keyBuffer
     );
-    hmac.update(embeddedData);
-    const computedSignature = hmac.digest();
+    hmacInstance.update(embeddedData);
+    const computedSignature = hmacInstance.digest();
 
     // Verify signature in constant time
     if (!crypto.timingSafeEqual(signature, computedSignature)) {
@@ -277,12 +294,13 @@ export function decodeFromBase64Image(
     const decipher = crypto.createDecipheriv('aes-256-gcm', keyBuffer, iv);
     decipher.setAuthTag(authTag);
     
-    let decryptedData = decipher.update(encryptedData);
-    decryptedData = Buffer.concat([decryptedData, decipher.final()]);
-
-    // Clean up sensitive data
-    if (keyBuffer) secureFree(keyBuffer);
+    // Use separate buffers for update and final to avoid buffer reuse issues
+    const decryptedDataPart1 = decipher.update(encryptedData);
+    const decryptedDataPart2 = decipher.final();
     
+    // Combine decrypted data parts
+    const decryptedData = Buffer.concat([decryptedDataPart1, decryptedDataPart2]);
+
     return decryptedData;
   } catch (err) {
     throw new ZeroError(
@@ -291,6 +309,11 @@ export function decodeFromBase64Image(
       {},
       err instanceof Error ? err : undefined
     );
+  } finally {
+    // Clean up sensitive data
+    if (keyBuffer) {
+      secureFree(keyBuffer);
+    }
   }
 }
 
@@ -332,7 +355,7 @@ function embedDataInImage(
   const fullData = Buffer.concat([lengthBuffer, dataToEmbed]);
   
   // Generate spread pattern based on a seed from the options
-  const spreadSeed = options.salt || crypto.randomBytes(4);
+  const spreadSeed = options.salt ? Buffer.from(options.salt) : crypto.randomBytes(4);
   const spreadPattern = generateSpreadPattern(
     imageData.length, 
     fullData.length * 8 / options.bitsPerPixel!,
@@ -383,7 +406,7 @@ function extractDataFromImage(
   let lengthBuffer = Buffer.alloc(4);
   
   // Generate the same spread pattern
-  const spreadSeed = options.salt || Buffer.from([0, 0, 0, 0]);
+  const spreadSeed = options.salt ? Buffer.from(options.salt) : Buffer.from([0, 0, 0, 0]);
   
   // Extract first 32 bits to get the length
   const initialSpreadPattern = generateSpreadPattern(
@@ -472,9 +495,10 @@ function generateSpreadPattern(
   spreadFactor: number
 ): number[] {
   // Create a deterministic PRNG based on the seed
-  const hmac = crypto.createHmac('sha256', seed);
-  hmac.update(Buffer.from([spreadFactor]));
-  let prngSeed = hmac.digest();
+  // Create a new HMAC instance to avoid reuse
+  const hmacInstance = crypto.createHmac('sha256', seed);
+  hmacInstance.update(Buffer.from([spreadFactor]));
+  let prngSeed = hmacInstance.digest();
   
   // Create a pattern array
   const pattern: number[] = [];
@@ -493,8 +517,10 @@ function generateSpreadPattern(
     // Update position using PRNG
     if (i % 32 === 31) {
       // Refresh PRNG state every 32 iterations
-      hmac.update(prngSeed);
-      prngSeed = hmac.digest();
+      // Create a new HMAC instance to avoid reuse
+      const refreshHmac = crypto.createHmac('sha256', prngSeed);
+      refreshHmac.update(Buffer.from([i]));
+      prngSeed = refreshHmac.digest();
     }
     
     // Update position
