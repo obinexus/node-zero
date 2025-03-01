@@ -10,10 +10,10 @@
 
 import { ZeroError } from "@/errors/ZeroError.js";
 import { SecureBuffer, CryptoFlags } from "@/types/common.js";
+import { ISaltOptions, isSaltOptions } from "@/types/crypto";
 import { ZeroErrorCode } from "@/types/error.js";
 import { CRYPTO } from "@/utils/constants.js";
 import { secureAlloc, secureCopy } from "@/utils/memory.js";
-import { ISaltOptions, isSaltOptions } from "./index.js";
 import crypto from 'crypto';
 
 

@@ -66,8 +66,8 @@ export {
 
 // Error types
 export {
-    ZeroError,
     IZeroErrorInfo,
+    ZeroResult,
     
     ZeroErrorCode
 } from './error.js';
