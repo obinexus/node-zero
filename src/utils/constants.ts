@@ -69,7 +69,7 @@ export const CRYPTO = {
      * Must be a supported algorithm by the platform
      * @see https://nodejs.org/api/crypto.html#crypto_crypto_gethashes
      */
-    DEFAULT_ALGORITHM: 'sha256' as HashAlgorithm,
+    DEFAULT_ALGORITHM: 'sha512' as HashAlgorithm,
     
     /**
      * Maximum acceptable salt length in bytes
