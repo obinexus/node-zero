@@ -1,101 +1,190 @@
-// src/cli/utils/index.ts
-
 import fs from 'fs/promises';
-import path from 'path';
+import { ZeroContext } from '../../context/ZeroContext.js';
+import { IZeroId, IZeroKey, IZeroData } from '../../types/encoding.js';
+import { ZeroError, ZeroErrorCode } from '../../errors/index.js';
 import chalk from 'chalk';
-import { ZeroContext } from '@/context/ZeroContext.js';
-import { idToString } from '@/encoding/id.js';
-import { IZeroData, IZeroId, IZeroKey, isKeyExpired, keyToString } from '@/encoding/index.js';
 
 /**
- * Reads input data from file
+ * Reads input data from a file
  * 
- * @param filename - Input file path
+ * @param filePath - Path to the input file (JSON)
  * @returns Data structure for ID creation
+ * @throws ZeroError if file cannot be read or parsed
  */
-export async function readInputData(filename: string): Promise<IZeroData> {
+export async function readInputData(filePath: string): Promise<IZeroData> {
   try {
-    const fileContent = await fs.readFile(filename, 'utf8');
-    let data: { [key: string]: string } = {};
+    // Read file content
+    const content = await fs.readFile(filePath, 'utf8');
     
-    // Check file extension
-    const ext = path.extname(filename).toLowerCase();
+    // Parse as JSON
+    const jsonData = JSON.parse(content);
     
-    if (ext === '.json') {
-      // Parse JSON
-      data = JSON.parse(fileContent);
-    } else {
-      // Parse key-value format (one per line)
-      const lines = fileContent.split('\n');
-      for (const line of lines) {
-        if (line.trim() && !line.startsWith('#')) {
-          const parts = line.split(':');
-          if (parts.length >= 2) {
-            const key = parts[0].trim();
-            const value = parts.slice(1).join(':').trim();
-            data[key] = value;
-          }
-        }
-      }
+    // Check if keys and values are present
+    if (!jsonData) {
+      throw new ZeroError(
+        ZeroErrorCode.INVALID_FORMAT,
+        'Input file does not contain valid data',
+        { filePath }
+      );
     }
     
-    // Convert to IZeroData format
+    // Convert JSON object to IZeroData
     const keys: string[] = [];
     const values: string[] = [];
     
-    for (const [key, value] of Object.entries(data)) {
-      keys.push(key);
-      values.push(value);
+    // Handle different input formats
+    if (Array.isArray(jsonData)) {
+      // Array of objects: extract all keys and values
+      for (const item of jsonData) {
+        for (const [key, value] of Object.entries(item)) {
+          keys.push(key);
+          values.push(String(value));
+        }
+      }
+    } else if (typeof jsonData === 'object') {
+      // Simple object: extract keys and values
+      for (const [key, value] of Object.entries(jsonData)) {
+        keys.push(key);
+        values.push(String(value));
+      }
+    } else {
+      throw new ZeroError(
+        ZeroErrorCode.INVALID_FORMAT,
+        'Input file must contain a JSON object or array',
+        { filePath, dataType: typeof jsonData }
+      );
     }
     
-    return { keys, values, count: keys.length };
-  } catch (error) {
-    throw new Error(`Failed to read input data from ${filename}: ${error instanceof Error ? error.message : String(error)}`);
+    // Ensure we have data
+    if (keys.length === 0) {
+      throw new ZeroError(
+        ZeroErrorCode.INVALID_FORMAT,
+        'Input file does not contain any properties',
+        { filePath }
+      );
+    }
+    
+    return {
+      keys,
+      values,
+      count: keys.length
+    };
+  } catch (err) {
+    if (err instanceof ZeroError) {
+      throw err;
+    }
+    
+    if (err instanceof SyntaxError) {
+      throw new ZeroError(
+        ZeroErrorCode.INVALID_FORMAT,
+        `Invalid JSON in file: ${filePath}`,
+        { filePath },
+        err
+      );
+    }
+    
+    throw new ZeroError(
+      ZeroErrorCode.IO_ERROR,
+      `Failed to read input data file: ${filePath}`,
+      { filePath },
+      err instanceof Error ? err : undefined
+    );
   }
 }
 
 /**
- * Displays ID information in the console
+ * Displays ID and key information in a user-friendly format
  * 
- * @param id - Zero ID to display
+ * @param id - ID to display
+ * @param key - Key to display (optional)
  * @param context - Zero context
  */
-export function displayId(id: IZeroId, context: ZeroContext): void {
+export function displayIdAndKey(id: IZeroId, key?: IZeroKey, context?: ZeroContext): void {
   console.log(chalk.bold('\nID Information:'));
-  console.log(chalk.gray('----------------'));
-  console.log(`${chalk.bold('Version:')} ${id.version}`);
-  console.log(`${chalk.bold('Hash:')} ${id.hash.toString('hex')}`);
-  console.log(`${chalk.bold('Salt:')} ${id.salt.toString('hex')}`);
-  console.log(chalk.gray('----------------'));
+  console.log(`  ${chalk.cyan('Version:')}  ${id.version}`);
+  console.log(`  ${chalk.cyan('Hash:')}     ${id.hash.toString('hex')}`);
+  console.log(`  ${chalk.cyan('Salt:')}     ${id.salt.toString('hex')}`);
   
-  console.log(`\n${chalk.bold('ID String Representation:')}`);
-  console.log(idToString(context, id));
+  if (key) {
+    console.log(chalk.bold('\nKey Information:'));
+    console.log(`  ${chalk.cyan('Hash:')}      ${key.hash.toString('hex')}`);
+    console.log(`  ${chalk.cyan('Timestamp:')} ${key.timestamp} (${new Date(key.timestamp).toISOString()})`);
+    
+    if (key.expirationTime) {
+      console.log(`  ${chalk.cyan('Expires:')}   ${key.expirationTime} (${new Date(key.expirationTime).toISOString()})`);
+      
+      // Check if key is expired
+      const isExpired = key.expirationTime < Date.now();
+      if (isExpired) {
+        console.log(`  ${chalk.red('Status:')}    EXPIRED`);
+      } else {
+        console.log(`  ${chalk.green('Status:')}    VALID`);
+      }
+    } else {
+      console.log(`  ${chalk.green('Status:')}    VALID (no expiration)`);
+    }
+  }
+  
+  console.log(''); // Empty line for better readability
 }
 
 /**
- * Displays ID and key information in the console
+ * Displays ID information in a user-friendly format
  * 
- * @param id - Zero ID to display
- * @param key - Zero key to display
+ * @param id - ID to display
  * @param context - Zero context
  */
-export function displayIdAndKey(id: IZeroId, key: IZeroKey, context: ZeroContext): void {
-  displayId(id, context);
-  
-  console.log(chalk.bold('\nKey Information:'));
-  console.log(chalk.gray('----------------'));
-  console.log(`${chalk.bold('Hash:')} ${key.hash.toString('hex')}`);
-  console.log(`${chalk.bold('Created:')} ${new Date(key.timestamp).toISOString()}`);
-  if (key.expirationTime) {
-    console.log(`${chalk.bold('Expires:')} ${new Date(key.expirationTime).toISOString()}`);
-    const expired = isKeyExpired(key);
-    console.log(`${chalk.bold('Status:')} ${expired ? chalk.red('Expired') : chalk.green('Valid')}`);
+export function displayId(id: IZeroId, context?: ZeroContext): void {
+  console.log(chalk.bold('\nID Information:'));
+  console.log(`  ${chalk.cyan('Version:')}  ${id.version}`);
+  console.log(`  ${chalk.cyan('Hash:')}     ${id.hash.toString('hex')}`);
+  console.log(`  ${chalk.cyan('Salt:')}     ${id.salt.toString('hex')}`);
+  console.log(''); // Empty line for better readability
+}
+
+/**
+ * Displays proof verification result
+ * 
+ * @param isValid - Whether the proof is valid
+ * @param id - Associated ID
+ * @param challenge - Challenge used for verification
+ */
+export function displayProofResult(isValid: boolean, id?: IZeroId, challenge?: Buffer): void {
+  if (isValid) {
+    console.log(chalk.bold.green('\n✓ Proof verification successful'));
   } else {
-    console.log(`${chalk.bold('Expires:')} Never`);
-    console.log(`${chalk.bold('Status:')} ${chalk.green('Valid')}`);
+    console.log(chalk.bold.red('\n✗ Proof verification failed'));
   }
-  console.log(chalk.gray('----------------'));
   
-  console.log(`\n${chalk.bold('Key String Representation:')}`);
-  console.log(keyToString(context, key));
+  if (id) {
+    console.log(chalk.bold('\nID Information:'));
+    console.log(`  ${chalk.cyan('Version:')}  ${id.version}`);
+    console.log(`  ${chalk.cyan('Hash:')}     ${id.hash.toString('hex').substring(0, 32)}...`);
+  }
+  
+  if (challenge) {
+    console.log(chalk.bold('\nChallenge:'));
+    console.log(`  ${chalk.cyan('Size:')}     ${challenge.length} bytes`);
+    console.log(`  ${chalk.cyan('Value:')}    ${challenge.toString('hex').substring(0, 32)}...`);
+  }
+  
+  console.log(''); // Empty line for better readability
+}
+
+/**
+ * Formats a file size for display
+ * 
+ * @param sizeInBytes - Size in bytes
+ * @returns Formatted size string
+ */
+export function formatFileSize(sizeInBytes: number): string {
+  if (sizeInBytes < 1024) {
+    return `${sizeInBytes} B`;
+  } else if (sizeInBytes < 1024 * 1024) {
+    return `${(sizeInBytes / 1024).toFixed(2)} KB`;
+  } else if (sizeInBytes < 1024 * 1024 * 1024) {
+    return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
+  } else {
+    return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  }
 }
