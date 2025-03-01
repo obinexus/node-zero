@@ -40,14 +40,10 @@
  */
 import { Command } from 'commander';
 import chalk from 'chalk';
-import path from 'path';
-import  fs from 'fs';
 import { registerCommands } from './commands/index.js';
 import { ZeroError } from '@/errors/ZeroError.js';
-
-// CLI version should match library version
-const CLI_VERSION = fs.readFileSync(path.resolve('package.json'), 'utf-8')
-  .match(/"version":\s*"(.*?)"/)?.[1] || '0.0.0';
+// CLI constants
+const CLI_VERSION = '0.1.0'; // Hardcoded version
 const PROGRAM_NAME = 'zero';
 
 /**
