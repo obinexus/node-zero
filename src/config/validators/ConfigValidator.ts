@@ -10,7 +10,7 @@ export class ConfigValidator {
   /**
    * JSON Schema validator
    */
-  private _ajv: Ajv;
+  private _ajv: InstanceType<typeof Ajv>;
 
   /**
    * Creates a new ConfigValidator instance
@@ -78,7 +78,7 @@ export class ConfigValidator {
     // If validation fails, add errors to the result
     if (!isValid && validate.errors) {
       validate.errors.forEach((error: ErrorObject) => {
-        const path = error.instancePath || '';
+        const path = error.dataPath || '';
         const message = error.message || 'Unknown validation error';
         const code = error.keyword;
 
