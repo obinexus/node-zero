@@ -28,7 +28,8 @@ import { ZeroMap } from './ZeroMap.js';
     saltLength: CRYPTO.DEFAULT_SALT_LENGTH,
     separator: ENCODING.DEFAULT_SEPARATOR,
     encodingSize: ENCODING.DEFAULT_ENCODING_SIZE,
-    version: VERSION.CURRENT
+    version: VERSION.CURRENT,
+    algorithm: CRYPTO.DEFAULT_ALGORITHM
   };
   
   /**
@@ -411,7 +412,8 @@ import { ZeroMap } from './ZeroMap.js';
         saltLength: partialConfig.saltLength ?? DEFAULT_CONFIG.saltLength,
         separator: partialConfig.separator ?? DEFAULT_CONFIG.separator,
         encodingSize: partialConfig.encodingSize ?? DEFAULT_CONFIG.encodingSize,
-        version: partialConfig.version ?? DEFAULT_CONFIG.version
+        version: partialConfig.version ?? DEFAULT_CONFIG.version,
+        algorithm: partialConfig.algorithm ?? DEFAULT_CONFIG.algorithm
       };
     }
     

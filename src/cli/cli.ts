@@ -129,6 +129,9 @@ function handleGlobalError(error: unknown): void {
   process.exit(1);
 }
 
+
+const program = createCLI();
+
 /**
  * Run the CLI if this is the main module
  */
@@ -139,6 +142,7 @@ if (import.meta.url === new URL(process.argv[1], 'file:').href) {
   });
 }
 
-const program = createCLI();
 export { program };
+
+
 export default { createCLI, main };

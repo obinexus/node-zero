@@ -61,6 +61,14 @@ export const CRYPTO = {
      * Minimum acceptable salt length in bytes
      */
     MIN_SALT_LENGTH: 16,
+
+    /**
+     * Default algorithm for password hashing
+     * Used for key derivation and password storage
+     * Must be a supported algorithm by the platform
+     * @see https://nodejs.org/api/crypto.html#crypto_crypto_gethashes
+     */
+    DEFAULT_ALGORITHM: 'SHA-256',
     
     /**
      * Maximum acceptable salt length in bytes
