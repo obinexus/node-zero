@@ -98,7 +98,9 @@
   },
   "jest": {
     "preset": "ts-jest/presets/default-esm",
-    "extensionsToTreatAsEsm": [".ts"],
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1",
       "^@cli/(.*)$": "<rootDir>/src/cli/$1",
@@ -111,10 +113,15 @@
     },
     "testEnvironment": "node",
     "transform": {
-      "^.+\\.tsx?$": ["ts-jest", {
-        "useESM": true
-      }]
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "useESM": true
+        }
+      ]
     },
-    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"]
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ]
   }
 }
