@@ -6,6 +6,7 @@ import alias from '@rollup/plugin-alias';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import {glob} from 'glob';
+import copy from 'rollup-plugin-copy';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,7 +22,19 @@ const pathAliases = {
   '@errors': path.resolve(__dirname, 'src/errors'),
   '@types': path.resolve(__dirname, 'src/types'),
   '@config': path.resolve(__dirname, 'src/config'),
+  
 };
+
+// Copy configuration files to dist/config
+const copyConfigFiles = copy({
+  targets: [
+    { src: 'zero.config.json', dest: 'dist/config' }
+  ],
+  verbose: true
+});
+
+const plugins = createPlugins(format);
+plugins.push(copyConfigFiles);
 
 // External dependencies that shouldn't be bundled
 const external = [

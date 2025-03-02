@@ -160,7 +160,7 @@ async function createSymlink(binPath) {
  */
 async function verifyDistFiles() {
   const cliEntryPath = path.resolve(__dirname, '..', 'dist', 'cli', 'cli.js');
-  const configPath = path.resolve(__dirname, '..', 'dist', 'config', 'index.js');
+  const configPath = path.resolve(__dirname, '..', 'dist', 'config', 'index.mjs');
   
   try {
       await fsSync.promises.access(cliEntryPath);
