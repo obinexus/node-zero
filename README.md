@@ -24,7 +24,6 @@ npm install @obinexuscomputing/zero
 ```
 
 ## Identity Management Workflow
-
 ### 1. Creating an Identity
 
 Create a secure identity from a JSON input file:

@@ -1,5 +1,5 @@
 {
-    "configVersion": "1.0.0",
+    "configVersion": "0.1.0",
     "security": {
       "secureMemory": true,
       "quantumResistant": false,
@@ -23,7 +23,7 @@
     "encoding": {
       "defaultSeparator": ".",
       "encodingSize": 62,
-      "defaultAlgorithm": "BASE64"
+      "defaultAlgorithm": "PBKDF2_HMAC_SHA512"
     },
     "network": {
       "defaultTimeout": 30000,
