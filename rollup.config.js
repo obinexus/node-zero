@@ -73,13 +73,17 @@ let config;
 // ESM build configuration
 if (format === 'esm') {
   config = {
-    input: 'src/index.ts',
+    input: {
+      'index': 'src/index.ts',
+      'config/index': 'src/config/index.ts'
+    },
     output: {
       dir: 'dist/esm',
       format: 'es',
       sourcemap: true,
       preserveModules: true,
-      preserveModulesRoot: 'src'
+      preserveModulesRoot: 'src',
+      entryFileNames: '[name].mjs'
     },
     external,
     plugins: createPlugins('esm')
@@ -94,6 +98,7 @@ const copyConfigFiles = copy({
   verbose: true
 });
 
+// Create the plugins array and add copyConfigFiles
 const plugins = createPlugins(format);
 plugins.push(copyConfigFiles);
 
@@ -131,8 +136,7 @@ if (format === 'cli') {
     'cli/commands/index': 'src/cli/commands/index.ts',
     'cli/utils/index': 'src/cli/utils/index.ts',
     'cli/handlers/index': 'src/cli/handlers/index.ts',
-    'cli/types/index': 'src/cli/types/index.ts',
-    'config/index': 'src/config/index.ts'
+    'cli/types/index': 'src/cli/types/index.ts'
   };
   
   // Add all command files
