@@ -31,7 +31,7 @@
     "build:esm": "rollup -c --environment FORMAT:esm",
     "build:cjs": "rollup -c --environment FORMAT:cjs",
     "build:cli": "rollup -c --environment FORMAT:cli",
-    "build:bin": "node scripts/create-bin.js",
+    "build:bin": "node scripts/create-bin.cjs",
     "build:watch": "rollup -c -w --environment FORMAT:esm",
     "clean": "rimraf dist bin",
     "lint": "eslint 'src/**/*.ts'",
@@ -60,7 +60,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/obinexus/node-zero.git"
+    "url": "https://github.com/obinexuscomputing/node-zero.git"
   },
   "engines": {
     "node": ">=16.0.0"
