@@ -52,6 +52,26 @@ const createPlugins = (format, declarations = true) => [
   })
 ];
 
+// Check for format from environment variable
+const format = process.env.FORMAT || 'esm';
+let config;
+
+// ESM build configuration
+if (format === 'esm') {
+  config = {
+    input: 'src/index.ts',
+    output: {
+      dir: 'dist/esm',
+      format: 'es',
+      sourcemap: true,
+      preserveModules: true,
+      preserveModulesRoot: 'src'
+    },
+    external,
+    plugins: createPlugins('esm')
+  };
+}
+
 // Copy configuration files to dist/config
 const copyConfigFiles = copy({
   targets: [
@@ -82,27 +102,6 @@ const external = [
 function getAllSourceFiles() {
   const files = glob.sync('src/**/*.ts');
   return files;
-}
-
-
-// Check for format from environment variable
-const format = process.env.FORMAT || 'esm';
-let config;
-
-// ESM build configuration
-if (format === 'esm') {
-  config = {
-    input: 'src/index.ts',
-    output: {
-      dir: 'dist/esm',
-      format: 'es',
-      sourcemap: true,
-      preserveModules: true,
-      preserveModulesRoot: 'src'
-    },
-    external,
-    plugins: createPlugins('esm')
-  };
 }
 
 // CJS build configuration
