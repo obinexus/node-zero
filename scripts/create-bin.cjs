@@ -18,7 +18,8 @@ const __dirname = path.dirname(__filename);
 const require = createRequire(import.meta.url);
 
 // Import the PermissionElevator utility
-import { PermissionElevator } from './PermissionElevator';
+const { PermissionElevator } = require('./PermissionElevator.js');
+
 /**
  * Ensures the bin directory exists
  * @returns {Promise<string>} Path to the bin directory

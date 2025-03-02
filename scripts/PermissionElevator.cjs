@@ -9,10 +9,10 @@
  *   const { PermissionElevator } = require('./PermissionElevator');
  *   PermissionElevator.elevatePermissions('/path/to/file', { verbose: true });
  */
-import { spawn } from 'child_process'
-import path from 'path';
-import fs from 'fs';
-import os from 'os';
+const { spawn } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+const os = require('os');
 
 /**
  * Utility class to elevate file permissions across different platforms
@@ -374,7 +374,8 @@ class PermissionElevator {
 }
 
 // Export the class
-export { PermissionElevator}
+module.exports = { PermissionElevator };
+
 // If this script is run directly, process command line arguments
 if (require.main === module) {
   const args = process.argv.slice(2);
