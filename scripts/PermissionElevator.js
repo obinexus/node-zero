@@ -9,10 +9,10 @@
  *   const { PermissionElevator } = require('./PermissionElevator');
  *   PermissionElevator.elevatePermissions('/path/to/file', { verbose: true });
  */
-const { spawn } = require('child_process');
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
+import { spawn } from 'child_process'
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
 
 /**
  * Utility class to elevate file permissions across different platforms
