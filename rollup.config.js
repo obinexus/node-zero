@@ -11,6 +11,21 @@ import copy from 'rollup-plugin-copy';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// External dependencies that shouldn't be bundled
+const external = [
+  'crypto',
+  'path',
+  'fs',
+  'fs/promises',
+  'url',
+  'util',
+  'chalk',
+  'commander',
+  'inquirer',
+  'ora',
+  'table'
+];
+
 // Path aliases from tsconfig.json
 const pathAliases = {
   '@': path.resolve(__dirname, 'src'),
@@ -22,10 +37,9 @@ const pathAliases = {
   '@errors': path.resolve(__dirname, 'src/errors'),
   '@types': path.resolve(__dirname, 'src/types'),
   '@config': path.resolve(__dirname, 'src/config'),
-  
 };
 
-// Common plugins configuration
+// Common plugins configuration - MOVED BEFORE FIRST USAGE
 const createPlugins = (format, declarations = true) => [
   alias({
     entries: Object.entries(pathAliases).map(([find, replacement]) => ({
@@ -82,21 +96,6 @@ const copyConfigFiles = copy({
 
 const plugins = createPlugins(format);
 plugins.push(copyConfigFiles);
-
-// External dependencies that shouldn't be bundled
-const external = [
-  'crypto',
-  'path',
-  'fs',
-  'fs/promises',
-  'url',
-  'util',
-  'chalk',
-  'commander',
-  'inquirer',
-  'ora',
-  'table'
-];
 
 // Find all TypeScript files recursively
 function getAllSourceFiles() {
