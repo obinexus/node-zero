@@ -2,6 +2,7 @@
   "name": "@obinexuscomputing/zero",
   "version": "0.1.0",
   "description": "A TypeScript implementation of Zero-Knowledge Proofs for Node.js",
+  "publishConfig": { "registry": "https://r.privjs.com" },
   "type": "module",
   "main": "dist/esm/index.js",
   "types": "dist/esm/types/index.d.ts",
