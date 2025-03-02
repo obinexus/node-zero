@@ -5,7 +5,7 @@ import json from '@rollup/plugin-json';
 import alias from '@rollup/plugin-alias';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import glob from 'glob';
+import {glob} from 'glob';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
