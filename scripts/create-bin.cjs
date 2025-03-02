@@ -13,12 +13,12 @@ const { fileURLToPath } = require('url')
 const { createRequire }  = require('module')
 
 // Set up module-related constants
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const require = createRequire(import.meta.url);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+// const require = createRequire(import.meta.url);
 
 // Import the PermissionElevator utility
-const { PermissionElevator } = require('./PermissionElevator.js');
+const { PermissionElevator } = require('./PermissionElevator.cjs');
 
 /**
  * Ensures the bin directory exists
