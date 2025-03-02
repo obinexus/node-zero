@@ -25,6 +25,33 @@ const pathAliases = {
   
 };
 
+// Common plugins configuration
+const createPlugins = (format, declarations = true) => [
+  alias({
+    entries: Object.entries(pathAliases).map(([find, replacement]) => ({
+      find,
+      replacement
+    }))
+  }),
+  resolve({
+    preferBuiltins: true,
+    extensions: ['.ts', '.js', '.json']
+  }),
+  commonjs(),
+  json(),
+  typescript({
+    tsconfig: './tsconfig.json',
+    sourceMap: true,
+    declaration: declarations,
+    declarationDir: declarations ? `dist/${format}/types` : undefined,
+    outDir: null,
+    compilerOptions: {
+      module: format === 'cjs' ? 'CommonJS' : 'ESNext',
+      moduleResolution: 'node'
+    }
+  })
+];
+
 // Copy configuration files to dist/config
 const copyConfigFiles = copy({
   targets: [
@@ -57,32 +84,6 @@ function getAllSourceFiles() {
   return files;
 }
 
-// Common plugins configuration
-const createPlugins = (format, declarations = true) => [
-  alias({
-    entries: Object.entries(pathAliases).map(([find, replacement]) => ({
-      find,
-      replacement
-    }))
-  }),
-  resolve({
-    preferBuiltins: true,
-    extensions: ['.ts', '.js', '.json']
-  }),
-  commonjs(),
-  json(),
-  typescript({
-    tsconfig: './tsconfig.json',
-    sourceMap: true,
-    declaration: declarations,
-    declarationDir: declarations ? `dist/${format}/types` : undefined,
-    outDir: null,
-    compilerOptions: {
-      module: format === 'cjs' ? 'CommonJS' : 'ESNext',
-      moduleResolution: 'node'
-    }
-  })
-];
 
 // Check for format from environment variable
 const format = process.env.FORMAT || 'esm';
