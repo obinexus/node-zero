@@ -374,8 +374,7 @@ class PermissionElevator {
 }
 
 // Export the class
-module.exports = { PermissionElevator };
-
+export { PermissionElevator}
 // If this script is run directly, process command line arguments
 if (require.main === module) {
   const args = process.argv.slice(2);
