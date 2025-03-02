@@ -134,7 +134,7 @@ if (format === 'cli') {
   config = {
     input: cliEntries,
     output: {
-      dir: 'dist',
+      dir: 'dist/cli',
       format: 'es',
       sourcemap: true,
       entryFileNames: '[name].js',
