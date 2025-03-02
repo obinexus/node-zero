@@ -163,9 +163,9 @@ async function verifyDistFiles() {
   const configPath = path.resolve(__dirname, '..', 'dist', 'config', 'index.js');
   
   try {
-      fsSync.promises.access(cliEntryPath),
-      fsSync.promises.access(configPath)
-      fs.access(configPath)
+      await fsSync.promises.access(cliEntryPath);
+      await fsSync.promises.access(configPath);
+      await fs.access(configPath);
     
     console.log('✅ Verified distribution files');
     return true;
