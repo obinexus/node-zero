@@ -6,8 +6,9 @@
  * Handles cross-platform permission elevation using PermissionElevator.
  */
 
+
 // Import Node.js modules
-const fs  = require('fs')
+const fs = require('fs').promises
 const path = require('path')
 const { fileURLToPath } = require('url')
 const { createRequire }  = require('module')
@@ -19,6 +20,7 @@ const { createRequire }  = require('module')
 
 // Import the PermissionElevator utility
 const { PermissionElevator } = require('./PermissionElevator.cjs');
+const fsSync = require('fs');
 
 /**
  * Ensures the bin directory exists
@@ -26,12 +28,13 @@ const { PermissionElevator } = require('./PermissionElevator.cjs');
  */
 async function createBinDir() {
   const binDir = path.resolve(__dirname, '..', 'bin');
-  
-  try {
+    try {
+    await fsSync.promises.mkdir(binDir, { recursive: true });
     await fs.mkdir(binDir, { recursive: true });
     console.log('✅ Created bin directory');
     return binDir;
-  } catch (error) {
+  } 
+  catch (error) {
     console.error('❌ Failed to create bin directory:', error);
     throw error;
   }
@@ -86,7 +89,7 @@ async function createBinScript(binDir) {
   const binContent = generateBinContent();
   
   try {
-    // Write the file content
+    await fsSync.promises.writeFile(binPath, binContent, 'utf8');
     await fs.writeFile(binPath, binContent, 'utf8');
     console.log(`✅ Created bin script at ${binPath}`);
     
@@ -132,23 +135,23 @@ async function createSymlink(binPath) {
   
   try {
     // Check if symlink already exists
-    try {
+      await fsSync.promises.unlink(symlinkPath);
       await fs.unlink(symlinkPath);
       console.log('🔄 Removed existing symlink');
     } catch (err) {
       // Ignore error if symlink doesn't exist
     }
     
-    // Create the symlink
+    await fsSync.promises.symlink(binPath, symlinkPath, 'file');
     await fs.symlink(binPath, symlinkPath, 'file');
     console.log(`🔗 Created symlink at ${symlinkPath}`);
     
     // Set permissions on the symlink
     await PermissionElevator.makeExecutable(symlinkPath, { verbose: true });
     
-  } catch (error) {
-    console.warn('⚠️ Failed to create symlink (non-critical):', error.message);
-  }
+    console.log(`🔑 Set executable permissions on ${symlinkPath}`)
+      
+   
 }
 
 /**
@@ -160,10 +163,10 @@ async function verifyDistFiles() {
   const configPath = path.resolve(__dirname, '..', 'dist', 'config', 'index.js');
   
   try {
-    await Promise.all([
-      fs.access(cliEntryPath),
+      fsSync.promises.access(cliEntryPath),
+      fsSync.promises.access(configPath)
       fs.access(configPath)
-    ]);
+    
     console.log('✅ Verified distribution files');
     return true;
   } catch (error) {
@@ -181,8 +184,7 @@ async function updatePackageJson() {
   const packageJsonPath = path.resolve(__dirname, '..', 'package.json');
   
   try {
-    // Read package.json
-    const packageJsonContent = await fs.readFile(packageJsonPath, 'utf8');
+    const packageJsonContent = await fsSync.promises.readFile(packageJsonPath, 'utf8');
     const packageJson = JSON.parse(packageJsonContent);
     
     // Check if bin field needs updating
@@ -196,16 +198,14 @@ async function updatePackageJson() {
         zero: expectedBinPath
       };
       
-      // Write updated package.json
-      await fs.writeFile(
+      await fsSync.promises.writeFile(
         packageJsonPath,
         JSON.stringify(packageJson, null, 2),
         'utf8'
       );
-      console.log('📝 Updated package.json bin field');
-    } else {
-      console.log('✅ Package.json bin field already set correctly');
+      console.log('✅ Updated package.json bin field');
     }
+
   } catch (error) {
     console.warn('⚠️ Failed to update package.json (non-critical):', error.message);
   }
