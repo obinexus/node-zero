@@ -20,7 +20,7 @@ const pathAliases = {
   '@encoding': path.resolve(__dirname, 'src/encoding'),
   '@errors': path.resolve(__dirname, 'src/errors'),
   '@types': path.resolve(__dirname, 'src/types'),
-  '@config': path.resolve(__dirname, 'src/config')
+  '@config': path.resolve(__dirname, 'src/config'),
 };
 
 // External dependencies that shouldn't be bundled
