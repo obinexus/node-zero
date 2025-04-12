@@ -16,4 +16,4 @@ export {
   registerInfoCommand,
   registerStegoCommand
 } from './commands/index.js';
-export * from './handlers/index.js';
+
