@@ -63,9 +63,10 @@ export interface DeriveCommandOptions {
   output?: string;
   algorithm?: string;
   format?: string;
+  network?: string;
   verbose?: boolean;
+  withKey?: boolean;
 }
-
 /**
  * Command options for 'create' command
  */
