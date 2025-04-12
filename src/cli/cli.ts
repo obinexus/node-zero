@@ -1,33 +1,10 @@
 /**
- * CLI main export module
+ * Command-line interface for Zero library
  * 
- * This file serves as the main entry point for the CLI functionality.
- * It initializes and exports the core CLI components and types.
+ * Provides a command-line interface for using Zero library features including
+ * identity management, zero-knowledge proofs, and network operations.
  * 
  * @module cli
- * 
- * @example
- * // Import and use the CLI programmatically
- * import { program } from '@zero/cli';
- * program.parse(process.argv);
- * 
- * @example
- * // Use individual CLI components
- * import { createCLI, main } from '@zero/cli';
- * const program = createCLI();
- * await main();
- * 
- * @example
- * // Access CLI commands and handlers
- * import { commands, handlers } from '@zero/cli';
- * commands.register(program);
- * 
- * @exports createCLI - Function to create and configure CLI instance
- * @exports main - Main CLI entry point function
- * @exports program - Initialized CLI program instance
- * @exports commands - CLI command definitions
- * @exports handlers - Command handler implementations
- * @exports types - CLI type definitions
  */
 /**
  * Zero CLI - Command-line interface for Zero library
@@ -80,28 +57,32 @@ export function createCLI(): Command {
   return program;
 }
 
-/**
- * Main entry point for CLI execution
- */
-export async function main(): Promise<void> {
-  try {
-    const program = createCLI();
-    
-    // Parse arguments
-    program.parse(process.argv);
-    
-    // Show help if no arguments are provided
-    if (process.argv.length < 3) {
-      program.help();
-    }
-  } catch (error) {
-    handleGlobalError(error);
-  }
+export function createCLI(): Command {
+  const program = new Command();
+  
+  // Configure global settings
+  program
+    .name(PROGRAM_NAME)
+    .description(chalk.bold('Zero Identity and ZKP Command Line Interface'))
+    .version(CLI_VERSION, '-V, --version', 'Show version information')
+    .option('-v, --verbose', 'Enable verbose output')
+    .helpOption('-h, --help', 'Show help information');
+  
+  // Register all commands
+  registerCommands(program);
+  
+  // Add help examples
+  program.on('--help', () => {
+    console.log('');
+    console.log('Examples:');
+    console.log('  $ zero create -i identity.json -o identity.zid');
+    console.log('  $ zero derive -i identity.zid -p "authentication" -o auth.zid');
+    console.log('  $ zero derive -i identity.zid -p "network-join" -n network.zid -o network-member.zid');
+    console.log('');
+  });
+  
+  return program;
 }
-
-/**
- * Global error handler
- * 
  * @param error - Error object
  */
 function handleGlobalError(error: unknown): void {

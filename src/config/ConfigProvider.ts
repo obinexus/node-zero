@@ -5,12 +5,16 @@
  * - Environment variable resolution
  * - Hierarchical config access
  * - Configuration path resolution
+ * - Default configuration settings
+ * - Schema-based configuration validation
  */
 import path from 'path';
 import { ZeroError, ZeroErrorCode } from '../errors';
 import { ZeroConfig } from './ZeroConfig';
 import { EnvironmentResolver } from './EnvironmentResolver';
 import { IZeroConfigModel } from './models/IZeroConfigModel';
+import { ContextFlags, CryptoFlags, HashAlgorithm } from '../types';
+import { CRYPTO, ENCODING, VERSION } from '../utils/constants';
 
 /**
  * Configuration provider for the Zero library

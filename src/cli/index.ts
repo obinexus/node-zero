@@ -6,6 +6,15 @@
  */
 
 export { createCLI, main, program } from './cli.js';
-export * from './commands/index.js';
+export { 
+  registerCreateCommand,
+  registerDeriveCommand, 
+  registerChallengeCommand,
+  registerProveCommand,
+  registerVerifyCommand,
+  registerVerifyProofCommand,
+  registerInfoCommand,
+  registerStegoCommand
+} from './commands/index.js';
 export * from './handlers/index.js';
-export * from './types/index.js';
+export { CommandOptions } from './types/index.js';
