@@ -96,17 +96,25 @@ function handleGlobalError(error: unknown): void {
 const program = createCLI();
 
 /**
+ * Main entry point for the CLI
+ */
+async function main(): Promise<void> {
+  try {
+    program.parse(process.argv);
+  } catch (error) {
+    handleGlobalError(error);
+  }
+}
+
+/**
  * Run the CLI if this is the main module
  */
 if (import.meta.url === new URL(process.argv[1], 'file:').href) {
-  main().catch((error) => {
+  main().catch((error: Error) => {
     console.error(chalk.red('Unhandled exception:'), error);
     process.exit(1);
   });
 }
 
-program.parse(process.argv);
-export { program };
-
-
+export { program, main };
 export default { createCLI, main };

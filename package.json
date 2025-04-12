@@ -30,6 +30,7 @@
     "LICENSE"
   ],
   "scripts": {
+
     "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:cli && npm run build:bin",
     "build:esm": "rollup -c --environment FORMAT:esm",
     "build:cjs": "rollup -c --environment FORMAT:cjs",
