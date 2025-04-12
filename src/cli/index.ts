@@ -17,4 +17,3 @@ export {
   registerStegoCommand
 } from './commands/index.js';
 export * from './handlers/index.js';
-export { CommandOptions } from './types/index.js';
