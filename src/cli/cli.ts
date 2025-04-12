@@ -48,29 +48,6 @@ export function createCLI(): Command {
   // Register all commands
   registerCommands(program);
   
-  // Handle help command explicitly
-  program
-    .command('help')
-    .description('Show help information')
-    .action(() => program.help());
-  
-  return program;
-}
-
-export function createCLI(): Command {
-  const program = new Command();
-  
-  // Configure global settings
-  program
-    .name(PROGRAM_NAME)
-    .description(chalk.bold('Zero Identity and ZKP Command Line Interface'))
-    .version(CLI_VERSION, '-V, --version', 'Show version information')
-    .option('-v, --verbose', 'Enable verbose output')
-    .helpOption('-h, --help', 'Show help information');
-  
-  // Register all commands
-  registerCommands(program);
-  
   // Add help examples
   program.on('--help', () => {
     console.log('');
@@ -83,6 +60,9 @@ export function createCLI(): Command {
   
   return program;
 }
+
+/**
+ * Handles global errors in the CLI
  * @param error - Error object
  */
 function handleGlobalError(error: unknown): void {

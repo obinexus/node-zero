@@ -1,7 +1,7 @@
 // src/cli/commands/derive.ts
 
 import { ZeroContext } from "@/context/ZeroContext.js";
-import { deriveId, createId } from "@/encoding/id.js";
+import { deriveId } from "@/encoding/id.js";
 import { createKey } from "@/encoding/key.js";
 import { ZeroError, ZeroErrorCode } from "@/errors/index.js";
 import chalk from "chalk";
@@ -230,3 +230,4 @@ function parseOutputFormat(format?: string): FileFormat {
       return FileFormat.TEXT;
   }
 }
+
