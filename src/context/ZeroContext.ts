@@ -9,6 +9,7 @@ import { ZeroError, ZeroErrorCode } from '@/errors/index.js';
 import { CryptoFlags } from '@/types/common.js';
 import { CRYPTO, ENCODING, VERSION } from '@/utils/constants.js';
 import { deepFreeze, secureAlloc, secureFree } from '@/utils/index.js';
+import { TokenManager } from './TokenManager.js';
 import { 
     IZeroContext,
     IZeroConfig,
@@ -76,6 +77,11 @@ import { ZeroMap } from './ZeroMap.js';
      * Optional user-defined data
      */
     public userData?: unknown;
+
+    /**
+     * Token manager for ZID tokens
+     */
+    public readonly tokenManager: TokenManager;
     
     /**
      * Creates a new ZeroContext instance
@@ -102,6 +108,7 @@ import { ZeroMap } from './ZeroMap.js';
       this.memoryUsed = 0;
       this.createdTime = Date.now();
       this.flags = flags;
+      this.tokenManager = new TokenManager();
       
       // Freeze config to prevent modifications
       deepFreeze(this.config);
