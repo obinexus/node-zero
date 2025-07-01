@@ -6,14 +6,20 @@
  */
 
 export { createCLI, main, program } from './cli.js';
-export { 
+export {
   registerCreateCommand,
-  registerDeriveCommand, 
+  registerDeriveCommand,
   registerChallengeCommand,
   registerProveCommand,
   registerVerifyCommand,
   registerVerifyProofCommand,
   registerInfoCommand,
-  registerStegoCommand
+  registerStegoCommand,
+  registerCreateTokenCommand,
+  registerRevokeTokenCommand,
+  registerRotateTokenCommand,
+  registerListTokensCommand,
+  registerRemoveZidCommand,
+  registerExportZidCommand
 } from './commands/index.js';
 
