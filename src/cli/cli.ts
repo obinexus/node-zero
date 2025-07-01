@@ -18,6 +18,8 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { registerCommands } from './commands/index.js';
+import { ZeroContext } from '@/context/ZeroContext.js';
+import { AuditLogger } from '@/context/AuditLogger.js';
 import { ZeroError } from '@/errors/ZeroError.js';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
@@ -36,6 +38,8 @@ const PROGRAM_NAME = 'zero';
  */
 export function createCLI(): Command {
   const program = new Command();
+  const context = ZeroContext.create();
+  const logger = new AuditLogger('audit.log');
   
   // Configure global settings
   program
@@ -46,7 +50,7 @@ export function createCLI(): Command {
     .helpOption('-h, --help', 'Show help information');
   
   // Register all commands
-  registerCommands(program);
+  registerCommands(program, context, logger);
   
   // Add help examples
   program.on('--help', () => {
