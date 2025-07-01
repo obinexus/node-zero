@@ -12,13 +12,19 @@ import { registerVerifyProofCommand } from './verify-proof.js';
 import { registerInfoCommand } from './info.js';
 import { registerStegoCommand } from './stego.js';
 import { registerConfigCommand } from './config.js';
+import { registerCreateTokenCommand } from './create-token.js';
+import { registerRevokeTokenCommand } from './revoke-token.js';
+import { registerRotateTokenCommand } from './rotate-token.js';
+import { registerListTokensCommand } from './list-tokens.js';
+import { registerRemoveZidCommand } from './remove-zid.js';
+import { registerExportZidCommand } from './export-zid.js';
 
 /**
  * Registers all CLI commands
  * 
  * @param program - Commander program instance
  */
-export function registerCommands(program: Command): void {
+export function registerCommands(program: Command, context: any, logger: any): void {
   // Register individual commands
   registerCreateCommand(program);
   registerDeriveCommand(program);
@@ -26,6 +32,12 @@ export function registerCommands(program: Command): void {
   registerChallengeCommand(program);
   registerProveCommand(program);
   registerVerifyProofCommand(program);
+  registerCreateTokenCommand(program, context, logger);
+  registerRevokeTokenCommand(program, context, logger);
+  registerRotateTokenCommand(program, context, logger);
+  registerListTokensCommand(program, context);
+  registerRemoveZidCommand(program, context, logger);
+  registerExportZidCommand(program);
   registerInfoCommand(program);
   registerStegoCommand(program);
   registerConfigCommand(program);
@@ -41,3 +53,9 @@ export * from './verify-proof.js';
 export * from './info.js';
 export * from './stego.js';
 export * from './config.js';
+export * from './create-token.js';
+export * from './revoke-token.js';
+export * from './rotate-token.js';
+export * from './list-tokens.js';
+export * from './remove-zid.js';
+export * from './export-zid.js';
