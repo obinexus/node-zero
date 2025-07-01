@@ -342,4 +342,38 @@ export class FileHandler {
       );
     }
   }
+
+  /**
+   * Writes plain text to a file
+   */
+  public static async writeText(outputPath: string, text: string): Promise<void> {
+    try {
+      const dir = path.dirname(outputPath);
+      await fs.mkdir(dir, { recursive: true });
+      await fs.writeFile(outputPath, text, 'utf8');
+    } catch (err) {
+      throw new ZeroError(
+        ZeroErrorCode.IO_ERROR,
+        `Failed to write text to: ${outputPath}`,
+        { outputPath },
+        err instanceof Error ? err : undefined
+      );
+    }
+  }
+
+  /**
+   * Reads plain text from a file
+   */
+  public static async readText(filePath: string): Promise<string> {
+    try {
+      return await fs.readFile(filePath, 'utf8');
+    } catch (err) {
+      throw new ZeroError(
+        ZeroErrorCode.IO_ERROR,
+        `Failed to read file: ${filePath}`,
+        { filePath },
+        err instanceof Error ? err : undefined
+      );
+    }
+  }
 }
