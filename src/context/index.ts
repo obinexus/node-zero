@@ -46,6 +46,8 @@ export {
 export {
   ZeroHashTable,
 } from './ZeroHashTable.js';
+export { TokenManager, TokenInfo } from './TokenManager.js';
+export { AuditLogger } from "./AuditLogger.js";
 
 // Additional utility functions for context module
 
