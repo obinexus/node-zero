@@ -1,6 +1,12 @@
 # Dependency directories
 node_modules/
 
+# keyfiles 
+*.zid
+*.zid.key
+*.bin
+*.ztc
+
 # Build outputs
 dist/
 coverage/
